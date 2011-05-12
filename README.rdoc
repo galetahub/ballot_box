@@ -1,6 +1,6 @@
 = BallotBox
 
-  The BallotBox gem enables visitors to vote for and against voteable objects
+The BallotBox gem enables visitors to vote for and against voteable objects
 
 == Install
   
@@ -14,7 +14,7 @@ Use middleware with options:
 
   # Initialize BallotBox and set its configurations.
   config.app_middleware.use BallotBox::Manager do |config|
-    config.routes = { "/posts/vote" => "Post" }
+    config.routes = { "/posts/votes" => "Post" }
   end
   
 Set voteable model:
@@ -23,6 +23,10 @@ Set voteable model:
     ballot_box :counter_cache => true
     # ballot_box :counter_cache => :rating
   end
+
+View (just send post request to configure route):
+  
+  link_to 'Vote', "/posts/votes?id=#{@post.id}", :remote => true, :method => :post
 
 == Callbacks
 
