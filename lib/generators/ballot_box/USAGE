@@ -1,0 +1,7 @@
+Usage:
+  rails generate ballot_box:install
+
+Options:
+                 
+Example:
+  rails g ballot_box:install

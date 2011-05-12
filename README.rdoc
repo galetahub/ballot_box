@@ -1,0 +1,57 @@
+= BallotBox
+
+  The BallotBox gem enables visitors to vote for and against voteable objects
+
+== Install
+  
+  gem 'ballot_box'
+
+  rails generate ballot_box:install
+  
+== Usage
+
+Use middleware with options:
+
+  # Initialize BallotBox and set its configurations.
+  config.app_middleware.use BallotBox::Manager do |config|
+    config.routes = { "/posts/vote" => "Post" }
+  end
+  
+Set voteable model:
+
+  class Post < ActiveRecord::Base
+    ballot_box :counter_cache => true
+    # ballot_box :counter_cache => :rating
+  end
+
+== Callbacks
+
+Middleware callbacks:
+  
+  BallotBox::Manager.before_vote do |env, vote|
+    vote.voter = env['warden'].user
+    #vote.errors.add(:voter, :empty)
+  end
+  
+  BallotBox::Manager.after_vote do |env, vote|
+    Rails.logger.info(vote.to_xml)
+  end
+  
+ActiveRecord callbacks:
+
+  class Post < ActiveRecord::Base
+    ballot_box :counter_cache => true
+    
+    before_vote :method_before
+    after_vote :method_after
+    
+    def method_before
+      Rails.logger.info current_vote.to_xml
+      # To terminate register vote, just return false
+      # return false
+    end
+    
+    def method_after
+      
+    end
+  end
