@@ -77,7 +77,7 @@ module BallotBox
       end
       
       def register
-        if voteable
+        if voteable && voteable.ballot_box_valid?(self)
           voteable.current_vote = self
           
           voteable.run_callbacks(:vote) do

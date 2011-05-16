@@ -21,12 +21,16 @@ Set voteable model:
 
   class Post < ActiveRecord::Base
     ballot_box :counter_cache => true
-    # ballot_box :counter_cache => :rating
+    # ballot_box :counter_cache => :rating, :strategies => [:authenticated]
   end
 
 View (just send post request to configure route):
   
   link_to 'Vote', "/posts/votes?id=#{@post.id}", :remote => true, :method => :post
+
+== Strategies
+
+Authenticated - check :voter attribute is not blank
 
 == Callbacks
 

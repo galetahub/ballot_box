@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Igor Galeta", "Pavlo Galeta"]
-  s.date = %q{2011-05-12}
+  s.date = %q{2011-05-16}
   s.description = %q{The BallotBox gem enables visitors to vote for and against voteable objects}
   s.email = %q{galeta.igor@gmail.com}
   s.extra_rdoc_files = [
@@ -27,6 +27,8 @@ Gem::Specification.new do |s|
     "lib/ballot_box/config.rb",
     "lib/ballot_box/engine.rb",
     "lib/ballot_box/manager.rb",
+    "lib/ballot_box/strategies/authenticated.rb",
+    "lib/ballot_box/strategies/base.rb",
     "lib/ballot_box/version.rb",
     "lib/ballot_box/voting.rb",
     "lib/generators/ballot_box/USAGE",
@@ -43,11 +45,14 @@ Gem::Specification.new do |s|
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<browser>, ["~> 0.1.2"])
+      s.add_runtime_dependency(%q<activemodel>, [">= 0"])
     else
       s.add_dependency(%q<browser>, ["~> 0.1.2"])
+      s.add_dependency(%q<activemodel>, [">= 0"])
     end
   else
     s.add_dependency(%q<browser>, ["~> 0.1.2"])
+    s.add_dependency(%q<activemodel>, [">= 0"])
   end
 end
 

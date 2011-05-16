@@ -7,11 +7,13 @@ module BallotBox
     module SingletonMethods
       #
       #  ballot_box :counter_cache => true,
-      #             :strategy => :default
+      #             :strategies => [:authenticated]
       #
       def ballot_box(options = {})
         extend ClassMethods
         include InstanceMethods
+        
+        options = { :strategies => [:authenticated] }.merge(options) 
         
         class_attribute :ballot_box_options, :instance_writer => false
         self.ballot_box_options = options
@@ -28,6 +30,7 @@ module BallotBox
     end
     
     module ClassMethods
+    
       def define_ballot_box_callbacks(*callbacks)
         define_callbacks *[callbacks, {:terminator => "result == false"}].flatten
         callbacks.each do |callback|
@@ -51,12 +54,20 @@ module BallotBox
           false
         end
       end
+      
+      def ballot_box_strategies
+        @@ballot_box_strategies ||= ballot_box_options[:strategies].map { |st| BallotBox.load_strategy(st) }
+      end
     end
     
     module InstanceMethods
       
       def ballot_box_cached_column
         @ballot_box_cached_column ||= self.class.ballot_box_cached_column
+      end
+      
+      def ballot_box_valid?(vote)
+        self.class.ballot_box_strategies.map { |st| st.new(self, vote) }.map(&:valid?).all?
       end
     end
   end
