@@ -48,7 +48,11 @@ module BallotBox
       end
       
       def as_json(options = nil)
-        options = { :methods => [:ip] }.merge(options || {})
+        options = { 
+          :methods => [:ip], 
+          :only => [:referrer, :value, :browser_version, :browser_name, :user_agent, :browser_platform ] 
+        }.merge(options || {})
+        
         super
       end
       
