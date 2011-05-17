@@ -42,9 +42,21 @@ Authenticated - check :voter attribute is not blank.
   end
   
 Write your own strategies:
-
+  
   class MyCustomStrategy < BallotBox::Strategies::Base
-    validates_uniqueness_of :voter_id, :voter_type
+    validate :check_visible, :check_unique_voter
+    
+    protected
+    
+      def check_visible
+        errors.add(:voteable, :invalid) unless voteable.visible?
+      end
+      
+      def check_unique_voter
+        if vote.class.where(["voter_id = ?  AND voter_type = ?", vote.voter_id, vote.voter_type]).exists?
+          errors.add(:voter, :taken)
+        end
+      end
   end
 
   class Post < ActiveRecord::Base
