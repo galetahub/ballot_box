@@ -43,7 +43,7 @@ Authenticated - check :voter attribute is not blank.
   
 Write your own strategies:
 
-  class MyCustomStrategy
+  class MyCustomStrategy < BallotBox::Strategies::Base
     validates_uniqueness_of :voter_id, :voter_type
   end
 
