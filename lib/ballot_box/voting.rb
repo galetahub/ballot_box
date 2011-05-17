@@ -23,6 +23,7 @@ module BallotBox
           # Callbacks
           before_save :parse_browser
           after_save :update_cached_columns
+          after_destroy :update_cached_columns
 
           attr_accessible :request
           
