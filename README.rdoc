@@ -30,7 +30,26 @@ View (just send post request to configure route):
 
 == Strategies
 
-Authenticated - check :voter attribute is not blank
+Strategy - is no more a simple validation at the object vote.
+Authenticated - check :voter attribute is not blank.
+
+  module BallotBox
+    module Strategies
+      class Authenticated < Base
+        validates_presence_of :voter
+      end
+    end
+  end
+  
+Write your own strategies:
+
+  class MyCustomStrategy
+    validates_uniqueness_of :voter_id, :voter_type
+  end
+
+  class Post < ActiveRecord::Base
+    ballot_box :strategies => [:authenticated, 'MyCustomStrategy']
+  end
 
 == Callbacks
 

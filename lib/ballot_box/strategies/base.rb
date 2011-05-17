@@ -19,7 +19,7 @@ module BallotBox
       
       # Returns the Errors object that holds all information about attribute error messages.
       def errors
-        @errors ||= ActiveModel::Errors.new(@vote)
+        @vote.errors
       end
     end
   end
