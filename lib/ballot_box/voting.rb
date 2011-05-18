@@ -36,6 +36,33 @@ module BallotBox
           scope :with_voteable, lambda { |record| where(["voteable_id = ? AND voteable_type = ?", record.id, record.class.name]) }
         end
       end
+      
+      def chart(mode)
+        result = case mode.to_s.downcase
+          when 'dates' then chart_dates
+          when 'browsers' then chart_browsers
+          when 'platforms' then chart_platforms
+        end
+        
+        [ result ].to_json
+      end
+      
+      protected
+      
+        def chart_dates
+          data = scoped.select("DATE(created_at) AS created_at, SUM(value) AS rating").group("DATE(created_at)").all
+          data.collect { |item| [ item.created_at, item.rating.to_i ] }
+        end
+        
+        def chart_browsers
+          data = scoped.select("browser_name, SUM(value) AS rating").group("browser_name").all
+          data.collect { |item| [ item.browser_name, item.rating.to_i ] }
+        end
+        
+        def chart_platforms
+          data = scoped.select("browser_platform, SUM(value) AS rating").group("browser_platform").all
+          data.collect { |item| [ item.browser_platform, item.rating.to_i ] }
+        end
     end
     
     module InstanceMethods
