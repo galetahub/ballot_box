@@ -21,8 +21,18 @@ Set voteable model:
 
   class Post < ActiveRecord::Base
     ballot_box :counter_cache => true
-    # ballot_box :counter_cache => :rating, :strategies => [:authenticated]
   end
+
+Set votes sum column:
+
+  ballot_box :counter_cache => :rating, :strategies => [:authenticated]
+
+Set place (position) column:
+  
+  ballot_box :place => true, :counter_cache => true
+  
+  ballot_box :counter_cache => :rating, 
+             :place => { :column => "place", :order => "rating DESC" }
 
 View (just send post request to configure route):
   

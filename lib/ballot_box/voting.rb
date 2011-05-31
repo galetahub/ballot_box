@@ -25,7 +25,7 @@ module BallotBox
           after_save :update_cached_columns
           after_destroy :update_cached_columns
 
-          attr_accessible :request
+          attr_accessible :request, :ip_address, :user_agent
           
           composed_of :ip,
             :class_name => 'IPAddr',
@@ -123,9 +123,29 @@ module BallotBox
         end
         
         def update_cached_columns
+          update_votes_count
+          update_place
+        end
+        
+        def update_votes_count
           if voteable && voteable.ballot_box_cached_column
             count = voteable.votes.select("SUM(value)")
             voteable.class.update_all("#{voteable.ballot_box_cached_column} = (#{count.to_sql})", ["id = ?", voteable.id])
+          end
+        end
+        
+        def update_place
+          if voteable && voteable.ballot_box_has_place?
+            table = voteable.class.quoted_table_name
+            query = %(UPDATE #{table} AS a
+              INNER JOIN (
+                SELECT @row := @row + 1 AS row, t.*
+	              FROM #{table} t, (SELECT @row := 0) r
+	              ORDER BY #{voteable.ballot_box_place_order}
+              ) AS b on a.id = b.id
+              SET a.#{voteable.ballot_box_place_column} = b.row;)
+            
+            voteable.class.connection.execute(query)
           end
         end
     end
