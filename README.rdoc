@@ -30,9 +30,15 @@ Set votes sum column:
 Set place (position) column:
   
   ballot_box :place => true, :counter_cache => true
-  
+
+or update place scope conditions:
+
   ballot_box :counter_cache => :rating, 
-             :place => { :column => "place", :order => "rating DESC" }
+             :place => "place"
+
+  def ballot_box_place_scope
+    self.class.unscoped.order("rating DESC").where(:is_visible => true)
+  end
 
 View (just send post request to configure route):
   

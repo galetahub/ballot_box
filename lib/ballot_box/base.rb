@@ -60,31 +60,17 @@ module BallotBox
       end
       
       def ballot_box_place_column
-        if ballot_box_has_place? 
-          if ballot_box_options[:place] == true
-            "place"
-          else
-            ballot_box_options[:place][:column] || "place"
-          end
-        end
-      end
-      
-      def ballot_box_place_order
-        if ballot_box_has_place?
-          if ballot_box_options[:place] == true
-            "votes_count DESC"
-          else
-            ballot_box_options[:place][:order] || "votes_count DESC"
-          end
+        if ballot_box_options[:place] == true
+          "place"
+        elsif ballot_box_options[:place]
+          ballot_box_options[:place]
+        else
+          false
         end
       end
       
       def ballot_box_strategies
         @@ballot_box_strategies ||= ballot_box_options[:strategies].map { |st| BallotBox.load_strategy(st) }
-      end
-      
-      def ballot_box_has_place?
-        ballot_box_options[:place] == true || ballot_box_options[:place].kind_of?(Hash)
       end
     end
     
@@ -97,13 +83,9 @@ module BallotBox
       def ballot_box_place_column
         @ballot_box_place_column ||= self.class.ballot_box_place_column
       end
-      
-      def ballot_box_place_order
-        @ballot_box_place_order ||= self.class.ballot_box_place_order
-      end
-      
-      def ballot_box_has_place?
-        self.class.ballot_box_has_place?
+     
+      def ballot_box_place_scope
+        self.class.unscoped.order("#{ballot_box_cached_column} DESC")
       end
       
       def ballot_box_valid?(vote)
