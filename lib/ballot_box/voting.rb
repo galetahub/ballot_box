@@ -136,17 +136,7 @@ module BallotBox
         
         def update_place
           if voteable && voteable.ballot_box_place_column
-            table = voteable.class.quoted_table_name
-            subquery = voteable.ballot_box_place_scope
-            subquery = subquery.select("@row := @row + 1 AS row, #{table}.id").from("#{table}, (SELECT @row := 0) r")
-            
-            query = %(UPDATE #{table} AS a
-              INNER JOIN (
-                #{subquery.to_sql}
-              ) AS b ON a.id = b.id
-              SET a.#{voteable.ballot_box_place_column} = b.row;)
-            
-            voteable.class.connection.execute(query)
+            voteable.class.ballot_box_update_place!
           end
         end
     end

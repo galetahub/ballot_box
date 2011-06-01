@@ -36,9 +36,17 @@ or update place scope conditions:
   ballot_box :counter_cache => :rating, 
              :place => "place"
 
-  def ballot_box_place_scope
-    self.class.unscoped.order("rating DESC").where(:is_visible => true)
+  def self.ballot_box_place_scope
+    unscoped.order("rating DESC").where(:is_visible => true)
   end
+
+Update votes directly:
+
+  Post.ballot_box_update_votes!
+
+Update place directly:
+  
+  Post.ballot_box_update_place!
 
 View (just send post request to configure route):
   

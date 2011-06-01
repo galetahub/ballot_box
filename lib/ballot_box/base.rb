@@ -72,6 +72,37 @@ module BallotBox
       def ballot_box_strategies
         @@ballot_box_strategies ||= ballot_box_options[:strategies].map { |st| BallotBox.load_strategy(st) }
       end
+      
+      def ballot_box_update_votes!
+        votes_table = BallotBox::Vote.quoted_table_name
+        
+        query = %(UPDATE #{quoted_table_name} a, 
+            (SELECT SUM(value) AS summa, voteable_id, voteable_type 
+             FROM #{votes_table} 
+             WHERE voteable_type = '#{name}'
+             GROUP BY voteable_id, voteable_type) b 
+          SET a.#{ballot_box_cached_column} = b.summa
+          WHERE a.id = b.voteable_id AND b.voteable_type = '#{name}')
+        
+        connection.execute(query)
+      end
+      
+      def ballot_box_place_scope
+        unscoped.order("#{ballot_box_cached_column} DESC")
+      end
+      
+      def ballot_box_update_place!
+        table = quoted_table_name
+        subquery = ballot_box_place_scope.select("@row := @row + 1 AS row, #{table}.id").from("#{table}, (SELECT @row := 0) r")
+        
+        query = %(UPDATE #{table} AS a
+          INNER JOIN (
+            #{subquery.to_sql}
+          ) AS b ON a.id = b.id
+          SET a.#{ballot_box_place_column} = b.row;)
+        
+        connection.execute(query)
+      end
     end
     
     module InstanceMethods
@@ -82,10 +113,6 @@ module BallotBox
       
       def ballot_box_place_column
         @ballot_box_place_column ||= self.class.ballot_box_place_column
-      end
-     
-      def ballot_box_place_scope
-        self.class.unscoped.order("#{ballot_box_cached_column} DESC")
       end
       
       def ballot_box_valid?(vote)
