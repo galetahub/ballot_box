@@ -21,7 +21,7 @@ module BallotBox
           validates_numericality_of :value, :only_integer => true
           
           # Callbacks
-          before_save :parse_browser
+          before_create :parse_browser
           after_save :update_cached_columns
           after_destroy :update_cached_columns
 
@@ -117,9 +117,9 @@ module BallotBox
       protected
       
         def parse_browser
-          self.browser_name = browser.id.to_s
-          self.browser_version = browser.version
-          self.browser_platform = browser.platform.to_s
+          self.browser_name ||= browser.id.to_s
+          self.browser_version ||= browser.version
+          self.browser_platform ||= browser.platform.to_s
         end
         
         def update_cached_columns
