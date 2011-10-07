@@ -88,12 +88,13 @@ module BallotBox
       end
       
       def ballot_box_place_scope
-        unscoped.order("#{ballot_box_cached_column} DESC")
+        unscoped.order("#{quoted_table_name}.#{ballot_box_cached_column} DESC")
       end
       
-      def ballot_box_update_place!
+      def ballot_box_update_place!(scope = nil)
         table = quoted_table_name
         subquery = ballot_box_place_scope.select("@row := @row + 1 AS row, #{table}.id").from("#{table}, (SELECT @row := 0) r")
+        subquery = subquery.where(scope) if scope
         
         query = %(UPDATE #{table} AS a
           INNER JOIN (
