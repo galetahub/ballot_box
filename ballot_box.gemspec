@@ -4,19 +4,20 @@
 # -*- encoding: utf-8 -*-
 
 Gem::Specification.new do |s|
-  s.name = %q{ballot_box}
-  s.version = "0.1.3"
+  s.name = "ballot_box"
+  s.version = "0.1.4"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Igor Galeta", "Pavlo Galeta"]
-  s.date = %q{2011-10-07}
-  s.description = %q{The BallotBox gem enables visitors to vote for and against voteable objects}
-  s.email = %q{galeta.igor@gmail.com}
+  s.date = "2011-10-10"
+  s.description = "The BallotBox gem enables visitors to vote for and against voteable objects"
+  s.email = "galeta.igor@gmail.com"
   s.extra_rdoc_files = [
     "LICENSE",
     "README.rdoc"
   ]
   s.files = [
+    "Gemfile.lock",
     "LICENSE",
     "README.rdoc",
     "Rakefile",
@@ -35,10 +36,10 @@ Gem::Specification.new do |s|
     "lib/generators/ballot_box/install_generator.rb",
     "lib/generators/ballot_box/templates/migrate/create_votes.rb"
   ]
-  s.homepage = %q{https://github.com/galetahub/ballot_box}
+  s.homepage = "https://github.com/galetahub/ballot_box"
   s.require_paths = ["lib"]
-  s.rubygems_version = %q{1.6.2}
-  s.summary = %q{The BallotBox gem enables visitors to vote for and against voteable objects}
+  s.rubygems_version = "1.8.10"
+  s.summary = "The BallotBox gem enables visitors to vote for and against voteable objects"
 
   if s.respond_to? :specification_version then
     s.specification_version = 3
