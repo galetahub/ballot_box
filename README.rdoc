@@ -40,9 +40,13 @@ or update place scope conditions:
     unscoped.order("rating DESC").where(:is_visible => true)
   end
 
-Update votes directly:
+Update votes sum directly:
 
   Post.ballot_box_update_votes!
+  
+or update votes sum only for one record:
+
+  @post.ballot_box_update_votes!
 
 Update place directly:
   

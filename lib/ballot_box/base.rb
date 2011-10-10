@@ -16,8 +16,9 @@ module BallotBox
         
         options = { 
           :strategies => [:authenticated], 
-          :place => false 
-        }.merge(options) 
+          :place => false,
+          :refresh => true
+        }.merge(options)
         
         class_attribute :ballot_box_options, :instance_writer => false
         self.ballot_box_options = options
@@ -118,6 +119,17 @@ module BallotBox
       
       def ballot_box_valid?(vote)
         self.class.ballot_box_strategies.map { |st| st.new(self, vote) }.map(&:valid?).all?
+      end
+      
+      def ballot_box_refresh?
+        self.class.ballot_box_options[:refresh]
+      end
+      
+      def ballot_box_update_votes!
+        if persisted? && ballot_box_cached_column
+          count = self.votes.select("SUM(value)")
+          self.class.update_all("#{ballot_box_cached_column} = (#{count.to_sql})", ["id = ?", id])
+        end
       end
     end
   end
