@@ -8,17 +8,23 @@ module BallotBox
       #
       #  ballot_box :counter_cache => true,
       #             :strategies => [:authenticated],
-      #             :place => { :column => "place", :order => "votes_count DESC" }
+      #             :place => :position,
+      #             :scope => :group_id
       #
       def ballot_box(options = {})
         extend ClassMethods
         include InstanceMethods
         
-        options = { 
-          :strategies => [:authenticated], 
+        default_options = { 
+          :strategies => [:authenticated],
+          :counter_cache => false, 
           :place => false,
-          :refresh => true
-        }.merge(options)
+          :refresh => true,
+          :scope => nil
+        }
+        
+        options.assert_valid_keys(default_options.keys)
+        options = default_options.merge(options)
         
         class_attribute :ballot_box_options, :instance_writer => false
         self.ballot_box_options = options
@@ -92,14 +98,37 @@ module BallotBox
         unscoped.order("#{quoted_table_name}.#{ballot_box_cached_column} DESC")
       end
       
-      def ballot_box_update_place!(scope = nil)
+      def ballot_box_update_place!(record = nil)
+        relation = ballot_box_place_scope
+        
+        if ballot_box_options[:scope]
+          scope_columns = Array.wrap(ballot_box_options[:scope])
+          
+          unless record.nil?
+            scope_columns.each do |scope_item|
+              scope_value = record.send(scope_item)
+              relation = relation.where(scope_item => scope_value)
+            end
+          else
+            unscoped.select(scope_columns).group(scope_columns).each do |record|
+              ballot_box_update_place!(record)
+            end
+            
+            return
+          end
+        end
+        
+        ballot_box_update_place_by_relation(relation)
+      end
+      
+      def ballot_box_update_place_by_relation(relation)
         table = quoted_table_name
-        subquery = ballot_box_place_scope.select("@row := @row + 1 AS row, #{table}.id").from("#{table}, (SELECT @row := 0) r")
-        subquery = subquery.where(scope) if scope
+        
+        relation = relation.select("@row := @row + 1 AS row, #{table}.id").from("#{table}, (SELECT @row := 0) r")
         
         query = %(UPDATE #{table} AS a
           INNER JOIN (
-            #{subquery.to_sql}
+            #{relation.to_sql}
           ) AS b ON a.id = b.id
           SET a.#{ballot_box_place_column} = b.row;)
         
@@ -129,6 +158,12 @@ module BallotBox
         if persisted? && ballot_box_cached_column
           count = self.votes.select("SUM(value)")
           self.class.update_all("#{ballot_box_cached_column} = (#{count.to_sql})", ["id = ?", id])
+        end
+      end
+      
+      def ballot_box_update_place!
+        if persisted? && ballot_box_place_column
+          self.class.ballot_box_update_place!(self)
         end
       end
     end
