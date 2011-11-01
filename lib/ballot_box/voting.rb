@@ -38,17 +38,35 @@ module BallotBox
       end
       
       def chart(mode)
-        result = case mode.to_s.downcase
-          when 'dates' then chart_dates
-          when 'browsers' then chart_browsers
-          when 'platforms' then chart_platforms
+        case mode.to_s.downcase
+          when 'dates' then [chart_dates]
+          when 'browsers' then [chart_browsers]
+          when 'platforms' then [chart_platforms]
+          when 'dates_browsers' then chart_dates_browsers
         end
-        
-        [ result ].to_json
       end
       
       protected
-      
+        
+        def chart_dates_browsers
+          result = []
+          data = scoped.select("DATE(created_at) AS created_at, SUM(value) AS rating, browser_name").group("DATE(created_at), browser_name").all
+          
+          result << { 
+            :name => "total", 
+            :data => data.group_by(&:created_at).collect { |created_at, items| [created_at, items.sum(&:rating) ] }
+          }
+          
+          data.group_by(&:browser_name).each do |browser_name, items|
+            result << { 
+              :name => browser_name, 
+              :data => items.collect { |item| [ item.created_at, item.rating.to_i ] } 
+            }
+          end
+          
+          result
+        end
+        
         def chart_dates
           data = scoped.select("DATE(created_at) AS created_at, SUM(value) AS rating").group("DATE(created_at)").all
           data.collect { |item| [ item.created_at, item.rating.to_i ] }
