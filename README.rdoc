@@ -10,9 +10,9 @@ The BallotBox gem enables visitors to vote for and against voteable objects
   
 == Usage
 
-Use middleware with options:
+Use middleware with options: route and voteable_type
 
-  # Initialize BallotBox and set its configurations.
+  # Initialize BallotBox request manager and set its configurations.
   config.app_middleware.use BallotBox::Manager do |config|
     config.routes = { "/posts/votes" => "Post" }
   end
@@ -20,7 +20,10 @@ Use middleware with options:
 Set voteable model:
 
   class Post < ActiveRecord::Base
-    ballot_box :counter_cache => true
+    ballot_box :counter_cache => true,
+               :strategies => [:authenticated],
+               :place => :position,
+               :scope => :group_id
   end
 
 Set votes sum column:
@@ -40,13 +43,21 @@ or update place scope conditions:
     unscoped.order("rating DESC").where(:is_visible => true)
   end
 
-Update votes directly:
+Update votes sum directly:
 
   Post.ballot_box_update_votes!
+  
+or update votes sum only for one record:
 
-Update place directly:
+  @post.ballot_box_update_votes!
+
+Update place directly for all scopes:
   
   Post.ballot_box_update_place!
+  
+or update place only for one scope:
+
+  @post.ballot_box_update_place!
 
 View (just send post request to configure route):
   
@@ -118,3 +129,5 @@ ActiveRecord callbacks:
       
     end
   end
+  
+This project rocks and uses MIT-LICENSE.

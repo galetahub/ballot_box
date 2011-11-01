@@ -23,4 +23,5 @@ module BallotBox
   end
 end
 
-require 'ballot_box/engine' if defined?(Rails)
+require 'ballot_box/version'
+require 'ballot_box/engine'

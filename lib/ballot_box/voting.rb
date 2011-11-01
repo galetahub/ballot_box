@@ -22,8 +22,8 @@ module BallotBox
           
           # Callbacks
           before_create :parse_browser
-          after_save :update_cached_columns
-          after_destroy :update_cached_columns
+          after_save :update_cached_columns, :if => :refresh?
+          after_destroy :update_cached_columns, :if => :refresh?
 
           attr_accessible :request, :ip_address, :user_agent
           
@@ -134,6 +134,10 @@ module BallotBox
       
       protected
       
+        def refresh?
+          voteable && voteable.ballot_box_refresh?
+        end
+      
         def parse_browser
           self.browser_name ||= browser.id.to_s
           self.browser_version ||= browser.version
@@ -146,14 +150,11 @@ module BallotBox
         end
         
         def update_votes_count
-          if voteable && voteable.ballot_box_cached_column
-            count = voteable.votes.select("SUM(value)")
-            voteable.class.update_all("#{voteable.ballot_box_cached_column} = (#{count.to_sql})", ["id = ?", voteable.id])
-          end
+          voteable.ballot_box_update_votes!
         end
         
         def update_place
-          if voteable && voteable.ballot_box_place_column
+          if voteable.ballot_box_place_column
             voteable.class.ballot_box_update_place!
           end
         end
