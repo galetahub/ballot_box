@@ -54,7 +54,7 @@ module BallotBox
           
           result << { 
             :name => "total", 
-            :data => data.group_by(&:created_at).collect { |created_at, items| [created_at, items.sum(&:rating) ] }
+            :data => data.group_by(&:created_at).collect { |created_at, items| [created_at, items.sum(&:rating).to_i ] }
           }
           
           data.group_by(&:browser_name).each do |browser_name, items|
