@@ -48,9 +48,19 @@ module BallotBox
       
       protected
         
+        # Simple little alias
+        def tn
+          quoted_table_name
+        end
+        
         def chart_dates_browsers
           result = []
-          data = scoped.select("DATE(created_at) AS created_at, SUM(value) AS rating, browser_name").group("DATE(created_at), browser_name").all
+          t = quoted_table_name
+          cols = ["DATE(#{tn}.created_at) AS created_at", 
+                  "SUM(#{tn}.value) AS rating", 
+                  "#{tn}.browser_name"]
+                  
+          data = scoped.select(cols.join(',')).group("DATE(#{tn}.created_at), #{tn}.browser_name").all
           
           result << { 
             :name => "total", 
@@ -68,17 +78,20 @@ module BallotBox
         end
         
         def chart_dates
-          data = scoped.select("DATE(created_at) AS created_at, SUM(value) AS rating").group("DATE(created_at)").all
+          t = quoted_table_name
+          cols = ["DATE(#{tn}.created_at) AS created_at", "SUM(#{tn}.value) AS rating"]
+          data = scoped.select(cols.join(',')).group("DATE(#{tn}.created_at)").all
           data.collect { |item| [ item.created_at, item.rating.to_i ] }
         end
         
         def chart_browsers
-          data = scoped.select("browser_name, SUM(value) AS rating").group("browser_name").all
+          t = quoted_table_name
+          data = scoped.select("#{tn}.browser_name, SUM(#{tn}.value) AS rating").group("#{tn}.browser_name").all
           data.collect { |item| [ item.browser_name, item.rating.to_i ] }
         end
         
         def chart_platforms
-          data = scoped.select("browser_platform, SUM(value) AS rating").group("browser_platform").all
+          data = scoped.select("#{tn}.browser_platform, SUM(#{tn}.value) AS rating").group("#{tn}.browser_platform").all
           data.collect { |item| [ item.browser_platform, item.rating.to_i ] }
         end
     end
