@@ -1,5 +1,5 @@
 # encoding: utf-8
-require 'ipaddr'
+require "ipaddr"
 require "browser"
 
 module BallotBox
@@ -32,8 +32,8 @@ module BallotBox
             :mapping => %w(ip_address to_i),
             :constructor => Proc.new { |ip_address| IPAddr.new(ip_address, Socket::AF_INET) },
             :converter => Proc.new { |value| value.is_a?(Integer) ? IPAddr.new(value, Socket::AF_INET) : IPAddr.new(value.to_s) }
-          
-          scope :with_voteable, lambda { |record| where(["voteable_id = ? AND voteable_type = ?", record.id, record.class.name]) }
+                  
+          scope :with_voteable, lambda { |record| where(:voteable_id => record.id, :voteable_type => record.class.name) }
         end
       end
       
@@ -112,7 +112,7 @@ module BallotBox
           :only => [:referrer, :value, :browser_version, :browser_name, :user_agent, :browser_platform ] 
         }.merge(options || {})
         
-        super
+        super(options)
       end
       
       def request

@@ -18,6 +18,6 @@ Gem::Specification.new do |s|
   s.extra_rdoc_files = ["README.rdoc"]
   s.require_paths = ["lib"]
   
-  s.add_dependency("browser", "~> 0.1.2")
+  s.add_dependency("browser", "~> 0.1.4")
   s.add_dependency("activemodel", ">= 0")
 end

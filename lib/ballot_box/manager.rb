@@ -41,7 +41,7 @@ module BallotBox
         
         _run_callbacks(:after_vote, env, vote)
         
-        [status, {'Content-Type' => 'application/json', 'Content-Length' => body.size.to_s}, body]
+        [status, {'Content-Type' => 'application/json', 'Content-Length' => body.size.to_s}, [body]]
       end
       
       def voting_path?(request_path)

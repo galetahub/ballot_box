@@ -7,6 +7,8 @@ The BallotBox gem enables visitors to vote for and against voteable objects
   gem 'ballot_box'
 
   rails generate ballot_box:install
+
+  rake ballot_box:install:migrations
   
 == Usage
 

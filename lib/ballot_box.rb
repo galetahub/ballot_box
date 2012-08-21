@@ -1,3 +1,4 @@
+# encoding: utf-8
 module BallotBox
   autoload :Voting,    'ballot_box/voting'
   autoload :Manager,   'ballot_box/manager'
