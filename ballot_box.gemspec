@@ -13,8 +13,8 @@ Gem::Specification.new do |s|
   s.rubyforge_project = "ballot_box"
   s.homepage = "https://github.com/galetahub/ballot_box"
   
-  s.files = Dir["{app,lib}/**/*"] + ["MIT-LICENSE", "Rakefile", "Gemfile", "README.rdoc"]
-  s.test_files = Dir["{test}/**/*"]
+  s.files = Dir["{app,db,lib}/**/*"] + ["MIT-LICENSE", "Rakefile", "Gemfile", "README.rdoc"]
+  s.test_files = Dir["{spec}/**/*"]
   s.extra_rdoc_files = ["README.rdoc"]
   s.require_paths = ["lib"]
   

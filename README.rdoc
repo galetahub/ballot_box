@@ -6,9 +6,13 @@ The BallotBox gem enables visitors to vote for and against voteable objects
   
   gem 'ballot_box'
 
-  rails generate ballot_box:install
+Create votes table by migration:
 
-  rake ballot_box:install:migrations
+  rake ballot_box_engine:install:migrations
+
+Or via generator:
+
+  rails generate ballot_box:install
   
 == Usage
 
@@ -132,4 +136,4 @@ ActiveRecord callbacks:
     end
   end
   
-This project rocks and uses MIT-LICENSE.
+Copyright (c) 2012 Fodojo, released under the MIT license
